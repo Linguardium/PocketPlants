@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "pocketplants",
+  "version": "${version}",
+  "name": "Pocket Plants",
+  "description": "Your pockets are so dirty, you could grow plants in there",
+  "authors": [
+    "Linguardium"
+  ],
+  "contributors": [],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/pocketplants/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "mod.linguardium.pocketplants.PocketPlants"
+    ],
+    "client": [],
+    "server": []
+  },
+  "mixins": [],
+  "depends": {
+    "fabricloader": ">=0.4.0"
+    //"fabric": "*"
+  }
+}

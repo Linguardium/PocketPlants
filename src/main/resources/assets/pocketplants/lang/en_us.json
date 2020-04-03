@@ -1,0 +1,8 @@
+{
+  "info.pocketplants.grown": "%s has grown. it is now %d / %d.",
+  "info.pocketplants.empty": "An empty Terrarium, small enough to fit in your pocket.",
+  "info.pocketplants.age": "Age: %d/%d",
+  "info.pocketplants.plantname": "Plant: %s",
+  "info.pocketplants.nameconcat": "%s %s",
+  "item.pocketplants.terrarium": "Pocket Terrarium"
+}
