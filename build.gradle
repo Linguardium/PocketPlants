@@ -22,7 +22,9 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	//modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+	implementation files('libs/conv-things-0.5.1-dev.jar')
+	modApi files('libs/conv-things-0.5.1-sources-dev.jar')
 }
 
 processResources {

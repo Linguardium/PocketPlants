@@ -1,8 +1,10 @@
 {
-  "info.pocketplants.grown": "%s has grown. it is now %d / %d.",
   "info.pocketplants.empty": "An empty Terrarium, small enough to fit in your pocket.",
   "info.pocketplants.age": "Age: %d/%d",
-  "info.pocketplants.plantname": "Plant: %s",
   "info.pocketplants.nameconcat": "%s %s",
-  "item.pocketplants.terrarium": "Pocket Terrarium"
+  "item.pocketplants.terrarium": "Pocket Terrarium",
+  "advancement.pocketplants.terrarium.title": "Itty Bitty Growing Space",
+  "advancement.pocketplants.terrarium.description": "Craft a Pocket Terrarium. Experience the freedom that it brings.",
+  "advancement.pocketplants.aquaterrarium.title": "It's an Aqua...Terrarium?",
+  "advancement.pocketplants.aquaterrarium.description": "Well, isn't that just useless..."
 }

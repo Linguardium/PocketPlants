@@ -1,22 +1,17 @@
 package mod.linguardium.pocketplants.items;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.CropBlock;
-import net.minecraft.block.entity.BlockEntity;
+import li.cryx.convth.block.AbstractResourcePlant;
+import mod.linguardium.pocketplants.compat.ConvenientThings;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.block.*;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.*;
-import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.predicate.BlockPredicate;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.ParsableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.*;
@@ -41,8 +36,18 @@ public class PocketTerrarium extends Item {
         BlockState bState = context.getWorld().getBlockState(pos);
         Block block = bState.getBlock();
         if (!hasPlant(stack)) {
-            if (block instanceof CropBlock) {
-                addPlant(stack, Registry.BLOCK.getId(block).toString());
+            if (
+                    block instanceof CropBlock ||
+                    (block instanceof SugarCaneBlock && !(context.getWorld().getBlockState(pos.offset(Direction.DOWN)).getBlock() instanceof SugarCaneBlock)) ||
+                    ((block instanceof KelpBlock || block instanceof KelpPlantBlock) && !(context.getWorld().getBlockState(pos.offset(Direction.DOWN)).getBlock() instanceof KelpBlock) && !(context.getWorld().getBlockState(pos.offset(Direction.DOWN)).getBlock() instanceof KelpPlantBlock))
+
+            ) {
+                if (block instanceof KelpPlantBlock) {
+                    // kelp grows, Kelp plant is just the base plant which we are grabbing.
+                    addPlant(stack,Registry.BLOCK.getId(Blocks.KELP).toString());
+                }else {
+                    addPlant(stack, Registry.BLOCK.getId(block).toString());
+                }
 //                setAge(stack,age);
                 context.getWorld().breakBlock(pos,false);
                 context.getWorld().breakBlock(pos.offset(Direction.DOWN),false);
@@ -54,7 +59,7 @@ public class PocketTerrarium extends Item {
     protected Block getPlantBlock(ItemStack stack) {
         CompoundTag tag = stack.getOrCreateSubTag("Plant");
         if (!tag.isEmpty()) {
-            String blockID = tag.getString("block"); // minecraft:wheat
+            String blockID = tag.getString("block");
             if (!blockID.isEmpty()) {
                 Block b = Registry.BLOCK.get(Identifier.tryParse(blockID));
                 return b;
@@ -76,11 +81,18 @@ public class PocketTerrarium extends Item {
         Block bPlant = getPlantBlock(stack);
         List<ItemStack> newStack = DefaultedList.of();
         if (bPlant instanceof CropBlock) {
-
-            BlockState bState = bPlant.getDefaultState().with(((CropBlock) bPlant).getAgeProperty(),getAge(stack));
-            //net.minecraft.loot.context.LootContext.Builder builder = (new net.minecraft.loot.context.LootContext.Builder(world)).setRandom(world.random).put(LootContextParameters.POSITION, player.getPos()).put(LootContextParameters.TOOL, ItemStack.EMPTY);
-
-            newStack = bPlant.getDroppedStacks(bState,world,player.getBlockPos(), null); //bState.getDroppedStacks(builder);
+            if (FabricLoader.getInstance().isModLoaded("convth") && bPlant instanceof AbstractResourcePlant) {
+                newStack = (ConvenientThings.getResourcePlantDrops(world,(AbstractResourcePlant)bPlant));
+            }else {
+                BlockState bState = bPlant.getDefaultState().with(((CropBlock) bPlant).getAgeProperty(), getAge(stack));
+                newStack = bPlant.getDroppedStacks(bState, world, player.getBlockPos(), null); //bState.getDroppedStacks(builder);
+            }
+        }else if(bPlant instanceof SugarCaneBlock) {
+            BlockState bState = bPlant.getDefaultState().with(SugarCaneBlock.AGE, getAge(stack));
+            newStack = bPlant.getDroppedStacks(bState,world,player.getBlockPos(),null);
+        }else if (bPlant instanceof KelpBlock) {
+            BlockState bState = bPlant.getDefaultState().with(KelpBlock.AGE, getAge(stack));
+            newStack = bPlant.getDroppedStacks(bState,world,player.getBlockPos(),null);
         }
         return newStack;
     }
@@ -96,7 +108,10 @@ public class PocketTerrarium extends Item {
                         ItemScatterer.spawn(world, player.getX(), player.getY(), player.getZ(), product);
                     }
                 }
-                setAge(stack, 0);
+                if (getPlantBlock(stack) instanceof KelpBlock)
+                    setAge(stack,world.random.nextInt(24));
+                else
+                    setAge(stack, 0);
                 return TypedActionResult.success(stack);
             }
         }
@@ -105,7 +120,7 @@ public class PocketTerrarium extends Item {
     protected boolean hasPlant(ItemStack stack) {
         CompoundTag tag = stack.getOrCreateSubTag("Plant");
         if (!tag.isEmpty()) {
-            String blockID = tag.getString("block"); // minecraft:wheat
+            String blockID = tag.getString("block");
             return !blockID.isEmpty();
         }
         return false;
@@ -123,17 +138,13 @@ public class PocketTerrarium extends Item {
         stack.putSubTag("Plant", tag);
     }
     protected int getMaxAge(ItemStack stack) {
-        CompoundTag tag = stack.getOrCreateSubTag("Plant");
-        if (tag.isEmpty()) {
-            return 0;
-        }
-        String blockID = tag.getString("block"); // minecraft:wheat
-        if (blockID.isEmpty()) {
-            return 0;
-        }
-        Block plant = Registry.BLOCK.getOrEmpty(Identifier.tryParse(blockID)).orElse(Blocks.AIR);
+        Block plant = getPlantBlock(stack);
         if (plant instanceof CropBlock) {
             return ((CropBlock) plant).getMaxAge();
+        }else if (plant instanceof SugarCaneBlock) {
+            return 15;
+        }else if (plant instanceof KelpBlock) {
+            return 25;
         }
         return 0;
     }
@@ -160,10 +171,15 @@ public class PocketTerrarium extends Item {
                 status = ((float)getAge(stack) / (float)getMaxAge(stack) > 0.5F) ? 2 : 1;
             }
         }
+        if (isWaterPlant(stack)) {
+            status+=3;
+        }
         stack.getOrCreateTag().putInt("CustomModelData",status);
         super.inventoryTick(stack, world, entity, slot, selected);
     }
-
+    public boolean isWaterPlant(ItemStack stack) {
+        return (getPlantBlock(stack) instanceof KelpBlock);
+    }
     @Override
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context) {
         if (hasPlant(stack)) {
