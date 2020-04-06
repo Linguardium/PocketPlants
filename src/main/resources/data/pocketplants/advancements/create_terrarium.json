@@ -1,0 +1,29 @@
+{
+  "parent": "minecraft:story/root",
+  "display": {
+    "icon": {
+      "item": "pocketplants:terrarium",
+      "nbt": "{CustomModelData:2}"
+    },
+    "title": {
+      "translate": "advancement.pocketplants.terrarium.title"
+    },
+    "description": {
+      "translate": "advancement.pocketplants.terrarium.description"
+    },
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "madeterrarium": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pocketplants:terrarium"
+          }]
+      }
+    }
+  }
+}

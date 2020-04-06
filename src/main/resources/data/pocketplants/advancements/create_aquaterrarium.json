@@ -1,0 +1,51 @@
+{
+  "parent": "pocketplants:create_terrarium",
+  "display": {
+    "icon": {
+      "item": "pocketplants:terrarium",
+      "nbt": "{CustomModelData:5}"
+    },
+    "title": {
+      "translate": "advancement.pocketplants.aquaterrarium.title"
+    },
+    "description": {
+      "translate": "advancement.pocketplants.aquaterrarium.description"
+    },
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "made_water_terrarium1": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pocketplants:terrarium",
+            "nbt": "{ CustomModelData: 4 }"
+          }]
+      }
+    },
+    "made_water_terrarium2": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pocketplants:terrarium",
+            "nbt": "{CustomModelData: 5}"
+          }]
+      }
+    },
+    "made_water_terrarium3": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pocketplants:terrarium",
+            "nbt": "{CustomModelData: 6}"
+          }]
+      }
+    }
+  },
+  "requirements": [["made_water_terrarium1","made_water_terrarium2","made_water_terrarium3"]]
+}
