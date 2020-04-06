@@ -1,8 +1,6 @@
 package mod.linguardium.pocketplants;
 
 import net.fabricmc.api.ModInitializer;
-
-import net.minecraft.block.CarrotsBlock;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
