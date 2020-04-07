@@ -17,11 +17,13 @@
       "mod.linguardium.pocketplants.PocketPlants"
     ],
     "client": [],
-    "server": []
+    "server": [],
+    "modmenu": [ "mod.linguardium.pocketplants.ConfigMenu" ]
   },
   "mixins": [],
   "depends": {
     "fabricloader": ">=0.4.0",
-    "fabric": "*"
+    "fabric": "*",
+    "modmenu": "*"
   }
 }

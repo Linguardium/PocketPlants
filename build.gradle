@@ -15,6 +15,7 @@ minecraft {
 repositories {
 	maven { url "https://jitpack.io" }
 	maven { url "http://server.bbkr.space:8081/artifactory/libs-release" }
+	jcenter()
 }
 dependencies {
 	//to change the versions see the gradle.properties file
@@ -23,8 +24,17 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-	implementation files('libs/conv-things-0.5.1-dev.jar')
-	modApi files('libs/conv-things-0.5.1-sources-dev.jar')
+
+	modApi "me.shedaniel.cloth:config-2:2.13.2"
+	include "me.shedaniel.cloth:config-2:2.13.2"
+
+	modCompile "me.sargunvohra.mcmods:autoconfig1u:2.0"
+	include "me.sargunvohra.mcmods:autoconfig1u:2.0"
+
+	modApi "io.github.prospector:modmenu:1.10.0+build.28"
+
+	//implementation files('libs/conv-things-0.5.1-dev.jar')
+	//modApi files('libs/conv-things-0.5.1-sources-dev.jar')
 }
 
 processResources {

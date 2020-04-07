@@ -3,8 +3,18 @@
   "info.pocketplants.age": "Age: %d/%d",
   "info.pocketplants.nameconcat": "%s %s",
   "item.pocketplants.terrarium": "Pocket Terrarium",
+
+
   "advancement.pocketplants.terrarium.title": "Itty Bitty Growing Space",
   "advancement.pocketplants.terrarium.description": "Craft a Pocket Terrarium. Experience the freedom that it brings.",
   "advancement.pocketplants.aquaterrarium.title": "It's an Aqua...Terrarium?",
-  "advancement.pocketplants.aquaterrarium.description": "Well, isn't that just useless..."
+  "advancement.pocketplants.aquaterrarium.description": "Well, isn't that just useless...",
+
+  "text.autoconfig.pocketplants.title": "Pocket Plants",
+  "text.autoconfig.pocketplants.option.bEnableSpeedIncrease": "Increase speed every harvest",
+  "text.autoconfig.pocketplants.option.sRateOfSpeedIncrease": "Increase speed multiplier per harvest",
+  "text.autoconfig.pocketplants.category.default": "Common",
+  "text.autoconfig.pocketplants.category.ExternalModSupport": "Mod Compatibility",
+  "text.autoconfig.pocketplants.option.bEnableConvenientThingsSupport": "Convenient Things",
+  "text.autoconfig.pocketplants.option.sModIdBlacklist": "Blacklisted ModIds"
 }

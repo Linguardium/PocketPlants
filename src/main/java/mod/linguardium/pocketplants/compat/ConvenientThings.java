@@ -4,7 +4,7 @@ import mod.linguardium.pocketplants.PocketPlants;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DefaultedList;
-import li.cryx.convth.block.AbstractResourcePlant;
+//import li.cryx.convth.block.AbstractResourcePlant;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.Level;
 import java.lang.reflect.Field;
@@ -13,7 +13,7 @@ import java.lang.reflect.Method;
 
 
 public class ConvenientThings {
-    public static DefaultedList<ItemStack> getResourcePlantDrops(World world, AbstractResourcePlant plantBlock) {
+/*    public static DefaultedList<ItemStack> getResourcePlantDrops(World world, AbstractResourcePlant plantBlock) {
         DefaultedList<ItemStack> items = DefaultedList.of();
         try {
             // Some reflection to get private stuff...
@@ -23,6 +23,8 @@ public class ConvenientThings {
             getResourceItem.setAccessible(true);
             int SeedDropChance = SEEDDROPCHANCE.getInt(plantBlock);
         if (world.random.nextInt(100) < SeedDropChance) {
+            items.add(new ItemStack(plantBlock.getSeedsItem(), 2));
+        }else{
             items.add(new ItemStack(plantBlock.getSeedsItem(), 1));
         }
 
@@ -33,5 +35,5 @@ public class ConvenientThings {
             PocketPlants.log(Level.ERROR,"Could not reflect to get access to ConvenientThings plant");
         }
         return items;
-    }
+    }*/
 }
