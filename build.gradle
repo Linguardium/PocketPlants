@@ -33,8 +33,6 @@ dependencies {
 
 	modApi "io.github.prospector:modmenu:1.10.0+build.28"
 
-	//implementation files('libs/conv-things-0.5.1-dev.jar')
-	//modApi files('libs/conv-things-0.5.1-sources-dev.jar')
 }
 
 processResources {

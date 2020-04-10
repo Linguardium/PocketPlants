@@ -1,5 +1,6 @@
 {
-  "info.pocketplants.empty": "An empty Terrarium, small enough to fit in your pocket.",
+  "info.pocketplants.empty1": "An empty Terrarium.",
+  "info.pocketplants.empty2": "Small enough to fit in your pocket.",
   "info.pocketplants.age": "Age: %d/%d",
   "info.pocketplants.nameconcat": "%s %s",
   "item.pocketplants.terrarium": "Pocket Terrarium",
@@ -9,8 +10,11 @@
   "advancement.pocketplants.terrarium.description": "Craft a Pocket Terrarium. Experience the freedom that it brings.",
   "advancement.pocketplants.aquaterrarium.title": "It's an Aqua...Terrarium?",
   "advancement.pocketplants.aquaterrarium.description": "Well, isn't that just useless...",
+  "advancement.pocketplants.flower_terrarium.title": "The Enchanted Rose",
+  "advancement.pocketplants.flower_terrarium.description": "Grow a flower in a jar",
 
   "text.autoconfig.pocketplants.title": "Pocket Plants",
+  "text.autoconfig.pocketplants.option.bAllowRefills": "Allow changing Terrarium plant",
   "text.autoconfig.pocketplants.option.bEnableSpeedIncrease": "Increase speed every harvest",
   "text.autoconfig.pocketplants.option.sRateOfSpeedIncrease": "Increase speed multiplier per harvest",
   "text.autoconfig.pocketplants.category.default": "Common",

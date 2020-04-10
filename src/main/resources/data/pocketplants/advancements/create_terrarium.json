@@ -2,7 +2,7 @@
   "parent": "minecraft:story/root",
   "display": {
     "icon": {
-      "item": "pocketplants:terrarium",
+      "item": "pocketplants:crop_terrarium",
       "nbt": "{CustomModelData:2}"
     },
     "title": {

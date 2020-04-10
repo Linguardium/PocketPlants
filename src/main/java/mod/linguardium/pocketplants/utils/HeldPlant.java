@@ -3,6 +3,7 @@ package mod.linguardium.pocketplants.utils;
 //import li.cryx.convth.block.AbstractResourcePlant;
 import net.minecraft.block.*;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -12,10 +13,10 @@ import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class HeldPlant {
-
     public static boolean hasPlant(ItemStack terrariumStack) {
         CompoundTag tag = terrariumStack.getOrCreateSubTag("Plant");
         if (!tag.isEmpty()) {
@@ -23,6 +24,7 @@ public class HeldPlant {
             return !blockID.isEmpty();
         }
         return false;
+
     }
 
     public static void growContainedPlant(ItemStack terrariumStack) {
@@ -93,10 +95,10 @@ public class HeldPlant {
         IntProperty ageProperty=null;
         Item seedItem = null;
         if (bPlant instanceof CropBlock) {
-            ageProperty=((CropBlock) bPlant).getAgeProperty();
+            ageProperty = ((CropBlock) bPlant).getAgeProperty();
             seedItem = bPlant.asItem();
             /*
-            *    Commented the below, i am pretending these will implement standard getDroppedStacks methods....
+             *    Commented the below, i am pretending these will implement standard getDroppedStacks methods....
              */
 /*            //Hopefully temporary hacky compatibility
             if (PocketPlants.getConfig().bEnableConvenientThingsSupport && FabricLoader.getInstance().isModLoaded("convth") && bPlant instanceof AbstractResourcePlant) {

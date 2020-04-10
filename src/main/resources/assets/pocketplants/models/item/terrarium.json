@@ -2,17 +2,6 @@
   "parent": "item/generated",
   "textures": {
     "layer0": "pocketplants:item/empty_planter"
-  },
+  }
 
-  "overrides": [
-    {"predicate": {"custom_model_data":1}, "model": "pocketplants:item/terrarium_stage1"},
-    {"predicate": {"custom_model_data":2}, "model": "pocketplants:item/terrarium_stage2"},
-    {"predicate": {"custom_model_data":3}, "model": "pocketplants:item/terrarium_stage3"},
-    {"predicate": {"custom_model_data":4}, "model": "pocketplants:item/waterterrarium_stage1"},
-    {"predicate": {"custom_model_data":5}, "model": "pocketplants:item/waterterrarium_stage2"},
-    {"predicate": {"custom_model_data":6}, "model": "pocketplants:item/waterterrarium_stage3"},
-    {"predicate": {"custom_model_data":7}, "model": "pocketplants:item/flowerterrarium_stage1"},
-    {"predicate": {"custom_model_data":8}, "model": "pocketplants:item/flowerterrarium_stage2"},
-    {"predicate": {"custom_model_data":9}, "model": "pocketplants:item/flowerterrarium_stage3"}
-  ]
 }

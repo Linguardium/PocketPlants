@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
     {
-      "item": "pocketplants:flower_terrarium"
+      "item": "pocketplants:crop_terrarium"
     }
   ],
   "result": {

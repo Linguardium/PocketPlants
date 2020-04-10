@@ -12,6 +12,8 @@ import java.util.Arrays;
 public class PocketPlantsConfig implements ConfigData {
 
 
+    public boolean bAllowRefills = false;
+
     public boolean bEnableSpeedIncrease = true;
     public String sRateOfSpeedIncrease =  "0.02";
 

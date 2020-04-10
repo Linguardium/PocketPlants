@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+
 import static mod.linguardium.pocketplants.items.initItems.initItems;
 
 public class PocketPlants implements ModInitializer {
@@ -20,6 +21,7 @@ public class PocketPlants implements ModInitializer {
         log(Level.INFO, "Initializing");
         AutoConfig.register(PocketPlantsConfig.class, JanksonConfigSerializer::new);
         initItems();
+        log(Level.INFO, "Loaded");
     }
     public static PocketPlantsConfig getConfig() {
         return AutoConfig.getConfigHolder(PocketPlantsConfig.class).getConfig();

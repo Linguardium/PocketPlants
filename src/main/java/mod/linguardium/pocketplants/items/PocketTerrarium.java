@@ -18,6 +18,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+
+import static mod.linguardium.pocketplants.items.initItems.*;
 import static mod.linguardium.pocketplants.utils.HeldPlant.*;
 
 import java.util.List;
@@ -29,35 +31,92 @@ public class PocketTerrarium extends Item {
         super(settings);
     }
 
-    @Override
-    public ActionResult useOnBlock(ItemUsageContext context) {
-        ItemStack stack = context.getStack();
-        BlockPos pos = context.getBlockPos();
-        BlockState bState = context.getWorld().getBlockState(pos);
-        Block block = bState.getBlock();
-        if (!hasPlant(stack) && (!PocketPlants.getConfig().isBlacklisted( Registry.BLOCK.getId(block).getNamespace()))) {
-            if (
-                    block instanceof CropBlock ||
-                    (block instanceof SugarCaneBlock && !(context.getWorld().getBlockState(pos.offset(Direction.DOWN)).getBlock() instanceof SugarCaneBlock)) ||
-                    ((block instanceof KelpBlock || block instanceof KelpPlantBlock) && !(context.getWorld().getBlockState(pos.offset(Direction.DOWN)).getBlock() instanceof KelpBlock) && !(context.getWorld().getBlockState(pos.offset(Direction.DOWN)).getBlock() instanceof KelpPlantBlock)) ||
-                    (block instanceof FlowerBlock || block instanceof TallFlowerBlock)
-
-            ) {
-                if(block instanceof TallFlowerBlock && context.getWorld().getBlockState(pos.offset(Direction.DOWN)).getBlock() instanceof TallFlowerBlock) {
-                    pos=pos.offset(Direction.DOWN);
-                    if (context.getWorld().getBlockState(pos.offset(Direction.DOWN)).getBlock() instanceof TallFlowerBlock) {
-                        return super.useOnBlock(context);
+    protected BlockPos canGrab(ItemStack terrariumStack, World world, BlockPos pos) {
+         if (world != null && pos != null) {
+            Block block = world.getBlockState(pos).getBlock();
+            Block base = world.getBlockState(pos.offset(Direction.DOWN)).getBlock();
+            if (PocketPlants.getConfig().isBlacklisted( Registry.BLOCK.getId(block).getNamespace())) {
+                return null;
+            }
+            if (block instanceof CropBlock && !(base instanceof CropBlock)) {
+                return pos;
+            }
+             if (block instanceof FlowerBlock && !(base instanceof FlowerBlock)) {
+                 return pos;
+             }
+            if (block instanceof TallFlowerBlock) {
+                while (base instanceof TallFlowerBlock) {
+                    pos = pos.offset(Direction.DOWN);
+                    base = world.getBlockState(pos.offset(Direction.DOWN)).getBlock();
+                    if (pos.getY() <= 0) {
+                        return null;
                     }
                 }
-                if (block instanceof KelpPlantBlock) {
-                    // kelp grows, Kelp plant is just the base plant which we are grabbing.
-                    addPlant(stack, Registry.BLOCK.getId(Blocks.KELP).toString());
-                }else {
-                    addPlant(stack, Registry.BLOCK.getId(block).toString());
+                return pos;
+            }
+            if (block instanceof SugarCaneBlock) {
+                while (base instanceof SugarCaneBlock) {
+                    pos = pos.offset(Direction.DOWN);
+                    base = world.getBlockState(pos.offset(Direction.DOWN)).getBlock();
+                    if (pos.getY() <= 0) {
+                        return null;
+                    }
                 }
-//                setAge(stack,age);
-                context.getWorld().breakBlock(pos,false);
-                context.getWorld().breakBlock(pos.offset(Direction.DOWN),false);
+                return pos;
+            }
+            if (block instanceof KelpPlantBlock || block instanceof KelpBlock) {
+                while (base instanceof KelpPlantBlock || base instanceof KelpBlock) {
+                    pos = pos.offset(Direction.DOWN);
+                    base = world.getBlockState(pos.offset(Direction.DOWN)).getBlock();
+                    if (pos.getY() <= 0) {
+                        return null;
+                    }
+                }
+                return pos;
+            }
+        }
+        return null;
+    }
+    protected ItemStack AttemptGrabBlock(ItemStack thisStack, World world, BlockPos pos) {
+        ItemStack newStack = ItemStack.EMPTY.copy();
+        BlockPos takePos = canGrab(thisStack,world,pos);
+        if (takePos != null) {
+            BlockState bState = world.getBlockState(takePos);
+            Block block = bState.getBlock();
+
+            CompoundTag tag = new CompoundTag().copyFrom(thisStack.getOrCreateTag());
+            if (block instanceof FluidFillable) {
+                newStack = new ItemStack(WATER_TERRARIUM);
+                if (block instanceof KelpPlantBlock) {
+                    block = Blocks.KELP;
+                }
+            }else if (block instanceof TallFlowerBlock || block instanceof FlowerBlock) {
+                newStack = new ItemStack(FLOWER_TERRARIUM);
+            }else{
+                newStack = new ItemStack(CROP_TERRARIUM);
+            }
+            newStack.setTag(tag);
+            addPlant(newStack, Registry.BLOCK.getId(block).toString());
+            world.breakBlock(takePos,false);
+            world.breakBlock(takePos.offset(Direction.DOWN),false);
+            return newStack;
+        }
+        return newStack;
+    }
+    @Override
+    public ActionResult useOnBlock(ItemUsageContext context) {
+        if (PocketPlants.getConfig().bAllowRefills || !(hasPlant(context.getStack()))) {
+            ItemStack stack = context.getStack();
+            World world = context.getWorld();
+            ItemStack grabbedStack = AttemptGrabBlock(stack, world, context.getBlockPos());
+            if (!grabbedStack.isEmpty()) {
+                if (!context.getPlayer().isCreative()) {
+                    stack.decrement(1);
+                }
+                if (!context.getPlayer().giveItemStack(grabbedStack)) {
+                    context.getPlayer().dropStack(grabbedStack);
+                }
+                return ActionResult.SUCCESS;
             }
         }
         return super.useOnBlock(context);
@@ -140,13 +199,13 @@ public class PocketTerrarium extends Item {
             }else {
                 status = ((float)getContainedPlantAge(stack) / (float)getContainedPlantMaxAge(stack) > 0.5F) ? 2 : 1;
             }
-        }
+        }/*
         if (isWaterPlant(stack)) {
             status+=3;
         }
         if (isFlowerPlant(stack)) {
             status+=6;
-        }
+        }*/
         stack.getOrCreateTag().putInt("CustomModelData",status);
         super.inventoryTick(stack, world, entity, slot, selected);
     }
@@ -156,7 +215,8 @@ public class PocketTerrarium extends Item {
         if (hasPlant(stack)) {
             tooltip.add(new TranslatableText("info.pocketplants.age", getContainedPlantAge(stack), getContainedPlantMaxAge(stack)));
         }else{
-            tooltip.add(new TranslatableText("info.pocketplants.empty").formatted(Formatting.ITALIC).formatted(Formatting.GRAY));
+            tooltip.add(new TranslatableText("info.pocketplants.empty1").formatted(Formatting.ITALIC).formatted(Formatting.GRAY));
+            tooltip.add(new TranslatableText("info.pocketplants.empty2").formatted(Formatting.ITALIC).formatted(Formatting.GRAY));
         }
         super.appendTooltip(stack, world, tooltip, context);
     }
