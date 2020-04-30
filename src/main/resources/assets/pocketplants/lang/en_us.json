@@ -4,7 +4,7 @@
   "info.pocketplants.age": "Age: %d/%d",
   "info.pocketplants.nameconcat": "%s %s",
   "item.pocketplants.terrarium": "Pocket Terrarium",
-
+  "info.terrarium.contains": "Contains: %s",
 
   "advancement.pocketplants.terrarium.title": "Itty Bitty Growing Space",
   "advancement.pocketplants.terrarium.description": "Craft a Pocket Terrarium. Experience the freedom that it brings.",

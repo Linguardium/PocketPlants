@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "mod.linguardium.pocketplants.mixins",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [],
+  "client": ["ItemRendererMixin", "BakedQuadMixin"],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

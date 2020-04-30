@@ -16,11 +16,11 @@
     "main": [
       "mod.linguardium.pocketplants.PocketPlants"
     ],
-    "client": [],
+    "client": ["mod.linguardium.pocketplants.PocketPlantsClient"],
     "server": [],
     "modmenu": [ "mod.linguardium.pocketplants.ConfigMenu" ]
   },
-  "mixins": [],
+  "mixins": ["pocketplants.mixins.json"],
   "depends": {
     "fabricloader": ">=0.4.0",
     "fabric": "*",

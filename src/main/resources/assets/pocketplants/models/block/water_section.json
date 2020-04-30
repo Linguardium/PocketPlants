@@ -1,0 +1,22 @@
+{
+	"credit": "Made with Blockbench",
+	"ambientocclusion": false,
+	"textures": {
+		"0": "pocketplants:block/semitransparent",
+		"particle": "pocketplants:block/semitransparent"
+	},
+	"elements": [
+		{
+			"from": [2, 3.01, 2],
+			"to": [14, 11.99, 14],
+			"faces": {
+				"north": {"uv": [0, 0, 12, 8.98], "texture": "#0", "tintindex": 0},
+				"east": {"uv": [0, 0, 12, 8.98], "texture": "#0", "tintindex": 0},
+				"south": {"uv": [0, 0, 12, 8.98], "texture": "#0", "tintindex": 0},
+				"west": {"uv": [0, 0, 12, 8.98], "texture": "#0", "tintindex": 0},
+				"up": {"uv": [0, 0, 12, 12], "texture": "#0", "tintindex": 0},
+				"down": {"uv": [0, 0, 12, 12], "texture": "#0", "tintindex": 0}
+			}
+		}
+	]
+}

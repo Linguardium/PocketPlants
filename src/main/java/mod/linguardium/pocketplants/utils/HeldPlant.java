@@ -1,22 +1,21 @@
 package mod.linguardium.pocketplants.utils;
 
 //import li.cryx.convth.block.AbstractResourcePlant;
+import mod.linguardium.pocketplants.api.PlantTag;
 import net.minecraft.block.*;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
-import java.util.HashMap;
 import java.util.List;
 
-public class HeldPlant {
+class HeldPlant {
     public static boolean hasPlant(ItemStack terrariumStack) {
         CompoundTag tag = terrariumStack.getOrCreateSubTag("Plant");
         if (!tag.isEmpty()) {
@@ -78,6 +77,16 @@ public class HeldPlant {
         }
         return Blocks.AIR;
     }
+    public static BlockEntity getPlantBlockEntity(ItemStack terrariumStack) {
+        CompoundTag tag = terrariumStack.getOrCreateSubTag("Plant");
+        if (!tag.isEmpty()) {
+            String blockID = tag.getString("blockEntity");
+            if (!blockID.isEmpty()) {
+                return Registry.BLOCK_ENTITY_TYPE.get(new Identifier(blockID)).instantiate();
+            }
+        }
+        return null;
+    }
     public static String getPlantBlockId(ItemStack terrariumStack) {
         CompoundTag tag = terrariumStack.getOrCreateSubTag("Plant");
         if (!tag.isEmpty()) {
@@ -89,34 +98,28 @@ public class HeldPlant {
         return (getContainedPlantAge(stack) >= getContainedPlantMaxAge(stack));
     }
     public static List<ItemStack> getPlantProductStack(ServerWorld world, PlayerEntity player, ItemStack terrariumStack) {
-        Block bPlant = getPlantBlock(terrariumStack);
-        BlockState bState = null;
         List<ItemStack> newStack = DefaultedList.of();
-        IntProperty ageProperty=null;
+        CompoundTag tag = terrariumStack.getOrCreateTag();
+
+        if (!tag.contains("PlantTag")) {
+            return newStack;
+        }
+        PlantTag pTag = PlantTag.fromTag(tag.getCompound("PlantTag"));
         Item seedItem = null;
+        Block bPlant = pTag.getBlock();
+/*        LootContext.Builder builder = new LootContext.Builder(world).setRandom(world.random)
+                .put(LootContextParameters.BLOCK_STATE, pTag.getBlockState())
+                .putNullable(LootContextParameters.BLOCK_ENTITY,pTag.getBlockEntity())
+                .put(LootContextParameters.TOOL, ItemStack.EMPTY)
+                .put(LootContextParameters.POSITION,player.getBlockPos());
+  */    if (bPlant==null) {
+            return newStack;
+        }
         if (bPlant instanceof CropBlock) {
-            ageProperty = ((CropBlock) bPlant).getAgeProperty();
             seedItem = bPlant.asItem();
-            /*
-             *    Commented the below, i am pretending these will implement standard getDroppedStacks methods....
-             */
-/*            //Hopefully temporary hacky compatibility
-            if (PocketPlants.getConfig().bEnableConvenientThingsSupport && FabricLoader.getInstance().isModLoaded("convth") && bPlant instanceof AbstractResourcePlant) {
-                newStack = (ConvenientThings.getResourcePlantDrops(world,(AbstractResourcePlant)bPlant));
-            }else {
-                bState = bPlant.getDefaultState().with(((CropBlock) bPlant).getAgeProperty(), getContainedPlantAge(terrariumStack));
-            }*/
-        }else if(bPlant instanceof SugarCaneBlock) {
-            ageProperty=SugarCaneBlock.AGE;
-        }else if (bPlant instanceof KelpBlock) {
-            ageProperty=KelpBlock.AGE;
-        }else if (bPlant instanceof FlowerBlock || bPlant instanceof TallFlowerBlock) {
-            newStack.add(new ItemStack(bPlant.asItem(),1));
         }
-        if (ageProperty != null && newStack.size() == 0) {
-            bState = bPlant.getDefaultState().with(ageProperty, getContainedPlantAge(terrariumStack));
-            newStack = Block.getDroppedStacks(bState, world, player.getBlockPos(), null);
-        }
+        newStack = Block.getDroppedStacks(pTag.getBlockState(),world,player.getBlockPos(),pTag.getBlockEntity());
+
         if (seedItem != null) {
             for (ItemStack iStack : newStack) {
                 if (iStack.getItem().equals(seedItem)) {
