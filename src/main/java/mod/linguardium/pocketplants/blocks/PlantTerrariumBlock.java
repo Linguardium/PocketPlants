@@ -2,6 +2,7 @@ package mod.linguardium.pocketplants.blocks;
 
 import mod.linguardium.pocketplants.PocketPlants;
 import mod.linguardium.pocketplants.api.PlantTag;
+import mod.linguardium.pocketplants.impl.TerrariumInventory;
 import mod.linguardium.pocketplants.items.PocketTerrarium;
 import mod.linguardium.pocketplants.utils.Nbt;
 import net.minecraft.block.*;
@@ -13,7 +14,6 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.FloatTag;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
@@ -86,13 +86,13 @@ public class PlantTerrariumBlock extends Block implements BlockEntityProvider {
                     if (PocketPlants.getConfig().bEnableSpeedIncrease) {
                         ((PlantTerrariumEntity) be).setMultiplier(((PlantTerrariumEntity) be).getMultiplier()+ PocketPlants.getConfig().RateOfSpeedIncrease());
                     }
-                    List<ItemStack> products = pTag.getPlantProductStack((ServerWorld)world,player.getBlockPos());
+                    TerrariumInventory inventory = (TerrariumInventory)be;
+                    List<ItemStack> products = inventory.getItems();
                     //find seeds to keep this from ballooning seed stock:
                     for (ItemStack product: products) {
-
                             ItemScatterer.spawn(world, pos.getX(), pos.getY()+1, pos.getZ(), product);
                     }
-                    pTag.resetBlockStateAge();
+                    inventory.clear();
                     ((PlantTerrariumEntity) be).setPlantTag(pTag);
                     return ActionResult.SUCCESS;
                 }else{
@@ -114,6 +114,9 @@ public class PlantTerrariumBlock extends Block implements BlockEntityProvider {
         }
         if (be instanceof PlantTerrariumEntity) {
             if (pTag != null) {
+                if (pTag.isMature()) {
+                    ((PlantTerrariumEntity) be).collectMatureCrop(pTag);
+                }
                 ((PlantTerrariumEntity) be).setPlantTag(pTag);
             }
             if (tag.contains("multiplier", Nbt.TagTypes.get(FloatTag.class))) {

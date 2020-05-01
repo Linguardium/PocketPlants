@@ -4,6 +4,7 @@
   "info.pocketplants.age": "Age: %d/%d",
   "info.pocketplants.nameconcat": "%s %s",
   "item.pocketplants.terrarium": "Pocket Terrarium",
+  "block.pocketplants.terrarium_block": "Pocket Terrarium",
   "info.terrarium.contains": "Contains: %s",
 
   "advancement.pocketplants.terrarium.title": "Itty Bitty Growing Space",
@@ -20,5 +21,10 @@
   "text.autoconfig.pocketplants.category.default": "Common",
   "text.autoconfig.pocketplants.category.ExternalModSupport": "Mod Compatibility",
   "text.autoconfig.pocketplants.option.bEnableConvenientThingsSupport": "Convenient Things",
-  "text.autoconfig.pocketplants.option.sModIdBlacklist": "Blacklisted ModIds"
+  "text.autoconfig.pocketplants.option.sModIdBlacklist": "Blacklisted ModIds",
+
+  "waila.pocketplants.contains_block": "Contains: %s",
+  "waila.pocketplants.contains_block_entity": "BlockEntity: %s",
+  "waila.pocketplants.contains_block_entity_unnamed": "Contains BlockEntity",
+  "waila.pocketplants.contains_soil": "Soil: %s"
 }

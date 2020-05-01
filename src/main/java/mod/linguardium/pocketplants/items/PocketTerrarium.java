@@ -23,12 +23,19 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static mod.linguardium.pocketplants.items.initItems.*;
 
 
 public class PocketTerrarium extends BlockItem {
+    public static ArrayList<Class> tallPlants = new ArrayList<>();
+    public static void registerTallPlant(Class clazz) {
+        if (!tallPlants.contains(clazz)) {
+            tallPlants.add(clazz);
+        }
+    }
 
     public PocketTerrarium(Block block, Settings settings) {
         super(block, settings);
@@ -49,7 +56,14 @@ public class PocketTerrarium extends BlockItem {
              if (block instanceof FlowerBlock && !(base instanceof FlowerBlock)) {
                  return pos;
              }
-             if (block instanceof TallFlowerBlock || block instanceof SugarCaneBlock) {
+             boolean isTall = false;
+             for (Class clazz : tallPlants) {
+                 if (clazz.isInstance(block)) {
+                     isTall=true;
+                     break;
+                 }
+             }
+             if (isTall) {
                  while (base == block) {
                      pos = pos.offset(Direction.DOWN);
                      base = world.getBlockState(pos.offset(Direction.DOWN)).getBlock();
@@ -107,27 +121,39 @@ public class PocketTerrarium extends BlockItem {
         if (context.getWorld().isClient()) {
             return ActionResult.SUCCESS;
         }
+        TypedActionResult useResult = TypedActionResult.pass(context.getStack());
+        if (!context.getPlayer().isSneaking()) {
 
-        if (PocketPlants.getConfig().bAllowRefills || !context.getStack().getOrCreateTag().contains("PlantTag") ) {
-            ItemStack stack = context.getStack();
-            World world = context.getWorld();
-            ItemStack grabbedStack = AttemptGrabBlock(stack, context);
-            if (!grabbedStack.isEmpty()) {
-                if (!context.getPlayer().isCreative()) {
-                    stack.decrement(1);
+            if (PocketPlants.getConfig().bAllowRefills || !context.getStack().getOrCreateTag().contains("PlantTag")) {
+                ItemStack stack = context.getStack();
+                World world = context.getWorld();
+                ItemStack grabbedStack = AttemptGrabBlock(stack, context);
+                if (!grabbedStack.isEmpty()) {
+                    if (!context.getPlayer().isCreative()) {
+                        stack.decrement(1);
+                    }
+                    if (!context.getPlayer().giveItemStack(grabbedStack)) {
+                        context.getPlayer().dropStack(grabbedStack);
+                    }
+                    return ActionResult.SUCCESS;
                 }
-                if (!context.getPlayer().giveItemStack(grabbedStack)) {
-                    context.getPlayer().dropStack(grabbedStack);
-                }
-                return ActionResult.SUCCESS;
             }
+            useResult = use(context.getWorld(), context.getPlayer(), context.getHand());
         }
-        return super.useOnBlock(context);
+        if (useResult.getResult() == ActionResult.PASS) {
+            return super.useOnBlock(context);
+        }
+        return useResult.getResult();
     }
 
     @Override
     public ActionResult place(ItemPlacementContext context) {
-
+        ItemStack stack = context.getStack();
+        CompoundTag tag = stack.getOrCreateTag();
+        PlantTag pTag = PlantTag.fromTag(tag.getCompound("PlantTag"));
+        if (!context.getPlayer().isSneaking() && pTag!=null && pTag.isMature()) {
+            return ActionResult.PASS;
+        }
         return super.place(context);
     }
 
@@ -170,7 +196,6 @@ public class PocketTerrarium extends BlockItem {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
-        if (!world.isClient()) {
             CompoundTag tag = stack.getOrCreateTag();
             if (tag.contains("PlantTag", Nbt.TagTypes.get(CompoundTag.class))) {
                 PlantTag pTag = PlantTag.fromTag(tag.getCompound("PlantTag"));
@@ -180,23 +205,24 @@ public class PocketTerrarium extends BlockItem {
                     if (!namespace.isEmpty() && PocketPlants.getConfig().isBlacklisted( namespace )) {
                         return TypedActionResult.pass(stack);
                     }
-                    if (PocketPlants.getConfig().bEnableSpeedIncrease) {
-                        setSpeedMultiplier(stack, getSpeedMultiplier(stack) + PocketPlants.getConfig().RateOfSpeedIncrease());
-                    }
-                    List<ItemStack> products = pTag.getPlantProductStack((ServerWorld)world,player.getBlockPos());
-                    //find seeds to keep this from ballooning seed stock:
-                    for (ItemStack product: products) {
-                        if (!player.giveItemStack(product)) {
-                            ItemScatterer.spawn(world, player.getX(), player.getY(), player.getZ(), product);
+                    if (!world.isClient()) {
+                        if (PocketPlants.getConfig().bEnableSpeedIncrease) {
+                            setSpeedMultiplier(stack, getSpeedMultiplier(stack) + PocketPlants.getConfig().RateOfSpeedIncrease());
                         }
+                        List<ItemStack> products = pTag.getPlantProductStack((ServerWorld) world, player.getBlockPos());
+                        //find seeds to keep this from ballooning seed stock:
+                        for (ItemStack product : products) {
+                            if (!player.giveItemStack(product)) {
+                                ItemScatterer.spawn(world, player.getX(), player.getY(), player.getZ(), product);
+                            }
+                        }
+                        pTag.resetBlockStateAge();
+                        tag.put("PlantTag", pTag.toTag());
+                        stack.setTag(tag);
                     }
-                    pTag.resetBlockStateAge();
-                    tag.put("PlantTag",pTag.toTag());
-                    stack.setTag(tag);
-                    return TypedActionResult.pass(stack);
+                    return TypedActionResult.success(stack);
                 }
             }
-        }
         return TypedActionResult.pass(stack);
     }
 
@@ -206,7 +232,7 @@ public class PocketTerrarium extends BlockItem {
         CompoundTag tag = stack.getOrCreateTag();
         if (!world.isClient()) {
             boolean randomTick = world.random.nextInt(4096) < (int)(world.getGameRules().getInt(GameRules.RANDOM_TICK_SPEED)*getSpeedMultiplier(stack));
-            if (randomTick) {
+            if (randomTick && world.random.nextInt(9)==0) { // random chance if soil is 3 moisture is rand((int)(25/3)+1) == 0 or rand(9)==0
                 if (tag.contains("Plant")) {
                     CompoundTag oldTag = tag.getCompound("Plant");
                     tag.remove("Plant");
@@ -222,18 +248,6 @@ public class PocketTerrarium extends BlockItem {
                 }
             }
         }
-        int status=0;
-        if (tag.contains("PlantTag")) {
-            PlantTag pTag = PlantTag.fromTag(tag.getCompound("PlantTag"));
-            if (pTag != null) {
-                if (pTag.isMature()) {
-                    status = 3;
-                } else {
-                    status = ((float) pTag.getAge() / (float) pTag.getMaxAge() > 0.5F) ? 2 : 1;
-                }
-            }
-        }
-        stack.getOrCreateTag().putInt("CustomModelData",status);
         super.inventoryTick(stack, world, entity, slot, selected);
     }
 

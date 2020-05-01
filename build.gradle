@@ -13,9 +13,14 @@ group = project.maven_group
 minecraft {
 }
 repositories {
-	maven { url "https://jitpack.io" }
+	maven {
+		url "https://jitpack.io"
+		credentials { username authToken }
+	}
 	maven { url "http://server.bbkr.space:8081/artifactory/libs-release" }
 	jcenter()
+	maven {url "http://tehnut.info/maven"}
+
 }
 dependencies {
 	//to change the versions see the gradle.properties file
@@ -25,13 +30,15 @@ dependencies {
 
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
-	modApi "me.shedaniel.cloth:config-2:2.13.2"
-	include "me.shedaniel.cloth:config-2:2.13.2"
+	modCompile "mcp.mobius.waila:Hwyla:${project.minecraft_version}-${project.hwyla_version}"
 
-	modCompile "me.sargunvohra.mcmods:autoconfig1u:2.0"
-	include "me.sargunvohra.mcmods:autoconfig1u:2.0"
+	modApi "me.shedaniel.cloth:config-2:${project.cloth_config_version}"
+	include "me.shedaniel.cloth:config-2:${project.cloth_config_version}"
+	modImplementation "io.github.prospector:modmenu:${project.modmenu_version}"
+	modCompile "me.sargunvohra.mcmods:autoconfig1u:${project.autoconfig_version}"
+	include "me.sargunvohra.mcmods:autoconfig1u:${project.autoconfig_version}"
 
-	modApi "io.github.prospector:modmenu:1.10.0+build.28"
+
 
 }
 

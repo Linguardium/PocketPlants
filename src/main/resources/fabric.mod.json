@@ -20,6 +20,12 @@
     "server": [],
     "modmenu": [ "mod.linguardium.pocketplants.ConfigMenu" ]
   },
+  "custom": {
+    "waila:plugins": {
+      "id": "pocketplants",
+      "initializer": "mod.linguardium.pocketplants.compat.WailaCompat"
+    }
+  },
   "mixins": ["pocketplants.mixins.json"],
   "depends": {
     "fabricloader": ">=0.4.0",
